@@ -87,21 +87,23 @@
     let imageUrl = null;
 
     // Bild hochladen
-    if (file) {
-      const fileName = Date.now() + "_" + file.name;
+    // Bild hochladen
+if (file) {
+  const fileName = Date.now() + "_" + file.name;
 
-      const { error: uploadError } = await client.storage
-        .from("images")
-        .upload(fileName, file);
+  const { error: uploadError } = await client.storage
+    .from("avatars")   // <-- wieder zurück auf avatars
+    .upload(fileName, file);
 
-      if (uploadError) {
-        status.textContent = "Fehler beim Bild-Upload.";
-        console.error(uploadError);
-        return;
-      }
+  if (uploadError) {
+    status.textContent = "Fehler beim Bild-Upload.";
+    console.error(uploadError);
+    return;
+  }
 
-      imageUrl = `${SUPABASE_URL}/storage/v1/object/public/images/${fileName}`;
-    }
+  imageUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`; // <-- auch hier avatars
+}
+
 
     // Eintrag speichern
     const { error: insertError } = await client
