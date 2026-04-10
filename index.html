@@ -66,13 +66,10 @@
 
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-  // 🔥 DEINE SUPABASE DATEN HIER EINTRAGEN
   const SUPABASE_URL = "https://ktihciyizejmfeepcglh.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_dS1sIbWyEf6qjB887D9JDA_1dN7zkVV";
 
-  // Supabase Client erstellen
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   async function addEntry() {
@@ -117,7 +114,7 @@
       return;
     }
 
-    status.textContent = "Gespeichert!";
+    status.textContent = "Erfolgreich hochgeladen!";
     document.getElementById("nameInput").value = "";
     document.getElementById("imageInput").value = "";
 
@@ -155,12 +152,14 @@
         </div>
       `;
 
-       entriesDiv.appendChild(div);
+      entriesDiv.appendChild(div);
     });
   }
 
   loadEntries();
 </script>
+
+
 
 </body>
 </html>
