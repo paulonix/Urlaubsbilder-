@@ -91,7 +91,7 @@
       const fileName = Date.now() + "_" + file.name;
 
       const { error: uploadError } = await client.storage
-        .from("avatars")
+        .from("images")
         .upload(fileName, file);
 
       if (uploadError) {
@@ -100,7 +100,7 @@
         return;
       }
 
-      imageUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`;
+      imageUrl = `${SUPABASE_URL}/storage/v1/object/public/images/${fileName}`;
     }
 
     // Eintrag speichern
