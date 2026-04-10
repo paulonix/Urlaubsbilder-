@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Gästeliste</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      max-width: 600px;
+      margin: auto;
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background: #22c55e;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .entry {
+      background: #0f172a;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Gästeliste</h2>
+
+  <input id="nameInput" type="text" placeholder="Dein Name">
+  <input id="imageInput" type="file" accept="image/*">
+  <button onclick="addEntry()">Eintragen</button>
+
+  <p id="status"></p>
+
+  <h3>Alle Einträge</h3>
+  <div id="entries"></div>
+</div>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // 🔥 DEINE SUPABASE DATEN HIER EINTRAGEN
+  const SUPABASE_URL = "https://ktihciyizejmfeepcglh.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_dS1sIbWyEf6qjB887D9JDA_1dN7zkVV";
+
+  // Supabase Client erstellen
+  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  async function addEntry() {
+    const name = document.getElementById("nameInput").value.trim();
+    const file = document.getElementById("imageInput").files[0];
+    const status = document.getElementById("status");
+
+    if (!name) {
+      status.textContent = "Bitte gib einen Namen ein.";
+      return;
+    }
+
+    status.textContent = "Speichere...";
+
+    let imageUrl = null;
+
+    // Bild hochladen
+    if (file) {
+      const fileName = Date.now() + "_" + file.name;
+
+      const { error: uploadError } = await client.storage
+        .from("avatars")
+        .upload(fileName, file);
+
+      if (uploadError) {
+        status.textContent = "Fehler beim Bild-Upload.";
+        console.error(uploadError);
+        return;
+      }
+
+      imageUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`;
+    }
+
+    // Eintrag speichern
+    const { error: insertError } = await client
+      .from("entries")
+      .insert([{ name: name, image_url: imageUrl }]);
+
+    if (insertError) {
+      status.textContent = "Fehler beim Speichern.";
+      console.error(insertError);
+      return;
+    }
+
+    status.textContent = "Gespeichert!";
+    document.getElementById("nameInput").value = "";
+    document.getElementById("imageInput").value = "";
+
+    loadEntries();
+  }
+
+  async function loadEntries() {
+    const entriesDiv = document.getElementById("entries");
+
+    const { data, error } = await client
+      .from("entries")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    entriesDiv.innerHTML = "";
+
+    data.forEach(entry => {
+      const div = document.createElement("div");
+      div.className = "entry";
+
+      const img = entry.image_url
+        ? `<img src="${entry.image_url}">`
+        : `<img src="https://via.placeholder.com/50">`;
+
+      div.innerHTML = `
+        ${img}
+        <div>
+          <strong>${entry.name}</strong><br>
+          <small>${entry.created_at || ""}</small>
+        </div>
+      `;
+
+       entriesDiv.appendChild(div);
+    });
+  }
+
+  loadEntries();
+</script>
+
+</body>
+</html>
