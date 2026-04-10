@@ -64,6 +64,16 @@
   <div id="entries"></div>
 </div>
 
+  
+<div id="imageModal" 
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); 
+            justify-content:center; align-items:center;">
+  <img id="modalImage" style="max-width:90%; max-height:90%; border-radius:12px;">
+</div>
+
+
+  
+
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -164,6 +174,21 @@
 
   loadEntries();
 
+  function openImage(url) {
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImage");
+
+  modalImg.src = url;
+  modal.style.display = "flex";
+}
+
+// Klick auf Hintergrund schließt das Bild
+document.getElementById("imageModal").addEventListener("click", () => {
+  document.getElementById("imageModal").style.display = "none";
+});
+  
+
 </script>
+  
 </body>
 </html>
