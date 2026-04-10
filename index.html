@@ -67,32 +67,11 @@
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = "https://ktihciyizejmfeepcglh.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_dS1sIbWyEf6qjB887D9JDA_1dN7zkVV";
-
-  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  async function addEntry() {
-    const name = document.getElementById("nameInput").value.trim();
-    const file = document.getElementById("imageInput").files[0];
-    const status = document.getElementById("status");
-
-    if (!name) {
-      status.textContent = "Bitte gib einen Namen ein.";
-      return;
-    }
-
-    status.textContent = "Speichere...";
-
-    let imageUrl = null;
-
-    // Bild hochladen
-    // Bild hochladen
 if (file) {
   const fileName = Date.now() + "_" + file.name;
 
-  const { error: uploadError } = await client.storage
-    .from("avatars")   // <-- wieder zurück auf avatars
+  const { data: uploadData, error: uploadError } = await client.storage
+    .from("avatars")
     .upload(fileName, file);
 
   if (uploadError) {
@@ -101,66 +80,15 @@ if (file) {
     return;
   }
 
-  imageUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`; // <-- auch hier avatars
+  // KORREKTE URL holen
+  const { data: publicUrlData } = client.storage
+    .from("avatars")
+    .getPublicUrl(fileName);
+
+  imageUrl = publicUrlData.publicUrl;
 }
 
-
-    // Eintrag speichern
-    const { error: insertError } = await client
-      .from("entries")
-      .insert([{ name: name, image_url: imageUrl }]);
-
-    if (insertError) {
-      status.textContent = "Fehler beim Speichern.";
-      console.error(insertError);
-      return;
-    }
-
-    status.textContent = "Erfolgreich hochgeladen!";
-    document.getElementById("nameInput").value = "";
-    document.getElementById("imageInput").value = "";
-
-    loadEntries();
-  }
-
-  async function loadEntries() {
-    const entriesDiv = document.getElementById("entries");
-
-    const { data, error } = await client
-      .from("entries")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    entriesDiv.innerHTML = "";
-
-    data.forEach(entry => {
-      const div = document.createElement("div");
-      div.className = "entry";
-
-      const img = entry.image_url
-        ? `<img src="${entry.image_url}">`
-        : `<img src="https://via.placeholder.com/50">`;
-
-      div.innerHTML = `
-        ${img}
-        <div>
-          <strong>${entry.name}</strong><br>
-          <small>${entry.created_at || ""}</small>
-        </div>
-      `;
-
-      entriesDiv.appendChild(div);
-    });
-  }
-
-  loadEntries();
-</script>
-
+  <script/>
 
 
 </body>
