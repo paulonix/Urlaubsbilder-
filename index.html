@@ -64,6 +64,21 @@
   transition: transform 0.2s;
 }
 
+    .share-buttons button {
+    background-color: #00aaff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.share-buttons button:hover {
+    background-color: #0088cc;
+}
+
     
   </style>
 </head>
@@ -93,6 +108,14 @@
             justify-content:center; align-items:center;">
   <img id="modalImage" style="max-width:90%; max-height:90%; border-radius:12px;">
 </div>
+
+  <div class="share-buttons">
+    <button onclick="copyLink()">🔗 Link kopieren</button>
+    <button onclick="shareWhatsApp()">📱 WhatsApp</button>
+    <button onclick="shareInstagram()">📸 Instagram</button>
+</div>
+
+  
 
 
   
@@ -218,6 +241,27 @@ document.addEventListener("click", function(e) {
 
 
 </script>
+
+  <script>
+const siteUrl = "https://paulonix.github.io/Urlaubsbilder-";
+
+function copyLink() {
+    navigator.clipboard.writeText(siteUrl);
+    alert("Link kopiert!");
+}
+
+function shareWhatsApp() {
+    const text = "Schau dir diese Website an: " + siteUrl;
+    window.open("https://wa.me/?text=" + encodeURIComponent(text));
+}
+
+function shareInstagram() {
+    alert("Instagram erlaubt kein direktes Teilen von Links. Der Link wurde kopiert!");
+    navigator.clipboard.writeText(siteUrl);
+}
+</script>
+
+
   
 </body>
 </html>
