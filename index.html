@@ -57,6 +57,12 @@
   transform: scale(9.05);
 }
 
+.entry img.tapped {
+  transform: scale(9.05);
+  transition: transform 0.2s;
+}
+
+    
   </style>
 </head>
 <body>
@@ -194,6 +200,19 @@ const img = entry.image_url
   }
 
   loadEntries();
+document.addEventListener("click", function(e) {
+  if (e.target.tagName === "IMG") {
+    const img = e.target;
+
+    // Tap-Zoom aktivieren
+    img.classList.add("tapped");
+
+    // Nach 200ms wieder zurück
+    setTimeout(() => {
+      img.classList.remove("tapped");
+    }, 200);
+  }
+});
 
 
 </script>
