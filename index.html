@@ -14,6 +14,7 @@
       margin: 0;
       padding: 20px;
     }
+
     .card {
       max-width: 600px;
       margin: auto;
@@ -64,25 +65,45 @@
   transition: transform 0.2s;
 }
 
-    .share-buttons button {
+    
+.share-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-right: 15px;
+    float: left; /* Buttons links neben der Tabelle */
+}
+
+.share-buttons button {
+    width: 40px;
+    height: 40px;
     background-color: #00aaff;
     color: white;
     border: none;
-    padding: 10px 15px;
-    margin: 5px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .share-buttons button:hover {
     background-color: #0088cc;
+}
+table {
+    margin-left: 70px;
 }
 
     
   </style>
 </head>
 <body>
+   <div class="share-buttons">
+    <button onclick="copyLink()">🔗 Link kopieren</button>
+    <button onclick="shareWhatsApp()">📱 WhatsApp</button>
+    <button onclick="shareInstagram()">📸 Instagram</button>
+</div>
 
 <div class="card">
   <h2>Gästeliste</h2>
@@ -109,11 +130,7 @@
   <img id="modalImage" style="max-width:90%; max-height:90%; border-radius:12px;">
 </div>
 
-  <div class="share-buttons">
-    <button onclick="copyLink()">🔗 Link kopieren</button>
-    <button onclick="shareWhatsApp()">📱 WhatsApp</button>
-    <button onclick="shareInstagram()">📸 Instagram</button>
-</div>
+
 
   
 
