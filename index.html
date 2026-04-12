@@ -277,6 +277,116 @@ function shareInstagram() {
     navigator.clipboard.writeText(siteUrl);
 }
 </script>
+<script type="module">
+  // Supabase Client
+  const supabaseUrl = "https://ktihciyizejmfeepcglh.supabase.co";
+  const supabaseKey = "sb_publishable_dS1sIbWyEf6qjB887D9JDA_1dN7zkVV";
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  const form = document.getElementById("uploadForm");
+  const nameInput = document.getElementById("name");
+  const fileInput = document.getElementById("file");
+  const tableBody = document.getElementById("tableBody");
+
+  // -----------------------------
+  // 1) Upload + public URL erzeugen
+  // -----------------------------
+  async function uploadImage(file) {
+    const fileName = `${Date.now()}_${file.name}`;
+
+    // Datei hochladen
+    const { data, error } = await supabase.storage
+      .from("avatars")
+      .upload(fileName, file);
+
+    if (error) {
+      console.error("Upload Fehler:", error);
+      return null;
+    }
+
+    // Public URL erzeugen
+    const { data: publicUrlData } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(fileName);
+
+    return publicUrlData.publicUrl;
+  }
+
+  // -----------------------------
+  // 2) Eintrag in DB speichern
+  // -----------------------------
+  async function saveEntry(name, imageUrl) {
+    const { error } = await supabase.from("entries").insert({
+      name: name,
+      image_url: imageUrl
+    });
+
+    if (error) console.error("DB Fehler:", error);
+  }
+
+  // -----------------------------
+  // 3) Tabelle laden
+  // -----------------------------
+  async function loadEntries() {
+    const { data, error } = await supabase
+      .from("entries")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Ladefehler:", error);
+      return;
+    }
+
+    tableBody.innerHTML = "";
+
+    data.forEach(entry => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${entry.name}</td>
+        <td><img src="${entry.image_url}" style="width:120px; border-radius:8px;"></td>
+        <td>${entry.created_at}</td>
+      `;
+
+      tableBody.appendChild(row);
+    });
+  }
+
+  // -----------------------------
+  // 4) Formular absenden
+  // -----------------------------
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = nameInput.value.trim();
+    const file = fileInput.files[0];
+
+    if (!name || !file) {
+      alert("Bitte Name und Bild auswählen");
+      return;
+    }
+
+    // Bild hochladen → URL bekommen
+    const imageUrl = await uploadImage(file);
+
+    if (!imageUrl) {
+      alert("Fehler beim Hochladen");
+      return;
+    }
+
+    // In DB speichern
+    await saveEntry(name, imageUrl);
+
+    alert("Erfolgreich hochgeladen!");
+
+    form.reset();
+    loadEntries();
+  });
+
+  // Beim Start laden
+  loadEntries();
+</script>
 
 
   
