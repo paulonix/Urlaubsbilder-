@@ -272,10 +272,14 @@ function shareWhatsApp() {
     window.open("https://wa.me/?text=" + encodeURIComponent(text));
 }
 
-function shareInstagram() {
-    alert("Instagram erlaubt kein direktes Teilen von Links. Der Link wurde kopiert!");
-    navigator.clipboard.writeText(siteUrl);
+<button onclick="big()">Instagram</button>
+<h1 id="out"></h1>
+function big() {
+  document.getElementById("out").innerText = "kein insta";
+  document.getElementById("out").style.fontSize = "150px";
 }
+
+
 </script>
 <script type="module">
   // Supabase Client
